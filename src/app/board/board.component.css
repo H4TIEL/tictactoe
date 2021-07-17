@@ -1,0 +1,13 @@
+main {
+    display: grid;
+    min-width: 300px;
+    min-height: 300px;
+    grid-template-rows: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+    justify-items: stretch;
+    align-items: stretch;
+}
+
+app-square {
+    border: 3px rgba(203, 203, 225, 50) solid;     
+}

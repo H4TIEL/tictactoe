@@ -1,0 +1,3 @@
+<main>
+    <app-square *ngFor="let square of squares; let i = index" [value]="square" (click)="makeMove(i)"></app-square>
+</main>
