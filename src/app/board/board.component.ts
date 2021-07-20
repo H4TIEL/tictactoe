@@ -17,18 +17,20 @@ export class BoardComponent implements OnInit {
   private winner: Player = null;
   private gameOver: boolean = false;
 
-
   public squares: any[] = [];
 
   constructor(public dialog: MatDialog) { }
+
 
   public ngOnInit(): void {
     this.newGame();
   }
 
+
   public get player() {
     return this.currentPlayer;
   }
+
 
   public newGame(): void {
     this.squares = Array(9).fill(null);
@@ -36,6 +38,7 @@ export class BoardComponent implements OnInit {
     this.winner = null;
     this.gameOver = false;
   }
+
 
   public makeMove(index: number): void {
     // human moves
@@ -79,6 +82,7 @@ export class BoardComponent implements OnInit {
       this.openDialog(this.winner);
     }
   }
+
 
   private allPossibleMoves(squares: any[]): any[] {
     let moves: any[] = [];
@@ -161,10 +165,8 @@ export class BoardComponent implements OnInit {
 
 
   private openDialog(winner: Player) {
-
     const data: WinnerDialogData = { winner: winner }
     const dialogRef = this.dialog.open(WinnerDialogComponent, { data });
-
     dialogRef.afterClosed().subscribe(result => {
       console.log(`Dialog result: ${result.data}`);
       if (result.data === true) this.newGame();
