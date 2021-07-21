@@ -1,0 +1,10 @@
+{
+  "hosting": {
+    "public": "dist/tictactoe",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}

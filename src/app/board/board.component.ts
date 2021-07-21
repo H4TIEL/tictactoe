@@ -43,10 +43,10 @@ export class BoardComponent implements OnInit {
   public makeMove(index: number): void {
     // human moves
     this.move(index, this.human);
-    this.currentPlayer = this.agent;
+
 
     // agent moves
-    if (!this.gameOver) {
+    if (!this.gameOver && this.currentPlayer == this.agent) {
       // calculate move
       let scores: number[] = [];
       let moves: any[] = this.allPossibleMoves(this.squares);
@@ -54,32 +54,34 @@ export class BoardComponent implements OnInit {
       moves.forEach(move => {
         let board: any[] = this.squares.slice();
         board.splice(move, 1, this.agent);
-        let score = this.minimax(board, this.human);
+        let score = this.minimax(board, -Infinity, +Infinity, this.human);
         scores.push(score);
       })
 
       let move: number = scores.indexOf(Math.max(...scores));
       this.move(moves[move], this.agent);
-      this.currentPlayer = this.human;
     }
   }
 
 
   private move(index: number, player: Player) {
+    // make move if sqaure is empty
     if (!this.squares[index]) {
       this.squares.splice(index, 1, player);
-    }
-    let state = this.checkWinner(this.squares, player);
-    if (state) {
-      // winner
-      this.winner = player;
-      this.gameOver = true;
-      this.openDialog(this.winner);
-    } else if (state === null) {
-      // draw
-      this.winner = null;
-      this.gameOver = true;
-      this.openDialog(this.winner);
+      this.currentPlayer = player === this.agent ? this.human : this.agent;
+
+      let state = this.checkWinner(this.squares, player);
+      if (state) {
+        // winner
+        this.winner = player;
+        this.gameOver = true;
+        this.openDialog(this.winner);
+      } else if (state === null) {
+        // draw
+        this.winner = null;
+        this.gameOver = true;
+        this.openDialog(this.winner);
+      }
     }
   }
 
@@ -131,9 +133,11 @@ export class BoardComponent implements OnInit {
    * 
    * @param squares board
    * @param player current player
+   * @param alpha 
+   * @param beta 
    * @returns score for board
    */
-  private minimax(squares: any[], player: Player): number {
+  private minimax(squares: any[], alpha: number, beta: number, player: Player): number {
     // game is complete
     let result = this.checkWinner(squares, this.agent) || this.checkWinner(squares, this.human);
     if (result || result === null) {
@@ -144,21 +148,29 @@ export class BoardComponent implements OnInit {
     if (player === this.agent) { // maximize
       let score = -Infinity;
       let moves: number[] = this.allPossibleMoves(squares);
-      moves.forEach(move => {
+      for (let move of moves) {
         let board: any[] = squares.slice();
         board.splice(move, 1, this.agent);
-        score = Math.max(score, this.minimax(board, this.human));
-      })
+        let evaluation = this.minimax(board, alpha, beta, this.human);
+        score = Math.max(score, evaluation);
+        alpha = Math.max(alpha, evaluation);
+        if (beta <= alpha)
+          break;
+      }
       return score;
 
     } else { // minimize
       let score = +Infinity;
       let moves: number[] = this.allPossibleMoves(squares);
-      moves.forEach(move => {
+      for (let move of moves) {
         let board: any[] = squares.slice();
         board.splice(move, 1, this.human);
-        score = Math.min(score, this.minimax(board, this.agent));
-      })
+        let evaluation = this.minimax(board, alpha, beta, this.agent);
+        score = Math.min(score, evaluation);
+        beta = Math.min(beta, evaluation)
+        if (beta <= alpha)
+          break;
+      }
       return score;
     }
   }
@@ -168,7 +180,6 @@ export class BoardComponent implements OnInit {
     const data: WinnerDialogData = { winner: winner }
     const dialogRef = this.dialog.open(WinnerDialogComponent, { data });
     dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result.data}`);
       if (result.data === true) this.newGame();
     });
   }
