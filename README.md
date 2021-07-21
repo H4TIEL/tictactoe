@@ -1,4 +1,4 @@
-# tictactoe
+# tictactoe ![tictactoe](https://github.com/H4TIEL/tictactoe/actions/workflows/firebase-hosting-merge.yml/badge.svg)
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli).
 
